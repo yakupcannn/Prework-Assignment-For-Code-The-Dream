@@ -22,14 +22,14 @@ def get_countries_by_region(data,region):
         return [], available_regions
 
 # Sort filtered countries by a given filter (default is population)
-def sort_countries_by(countries,by="population"):
+def sort_countries_by(countries,by="population",reversed =True):
     if countries is None:
         print("No data available to sort.")
         return []
     if by not in countries[0]:
         print(f"Invalid filter '{by}' provided. Please use a valid filter.")
         return []
-    sorted_countries = sorted(countries, key=lambda x: x[by], reverse=True)
+    sorted_countries = sorted(countries, key=lambda x: x[by], reverse=reversed)
     return sorted_countries
 # Fetch the most populated countries from the sorted list
 def fetch_the_most_populated_countries(sorted_countries=None, n:int=2):
@@ -39,10 +39,10 @@ def fetch_the_most_populated_countries(sorted_countries=None, n:int=2):
     return sorted_countries[:n]
 
 # Print countries with population, area, and name
-def print_countries(countries:list,sorted = True,sort_by="population"):
+def print_countries(countries:list,sorted = True,sort_by="population",reverse=True):
     if sorted:
-        countries = sort_countries_by(countries, by=sort_by)
-        print(f"\n{len(countries)} {'most populated countries'.upper()}\n")
+        countries = sort_countries_by(countries, by=sort_by, reversed=reverse)
+        print(f"\n{len(countries)} countries sorted by '{sort_by}' in {'descending' if reverse else 'ascending'} order\n")
     else:
         print(f"\n{len(countries)} {'countries'.upper()}\n")
     print("Code", "\tPopulation\t", "Area\t", "\tName")
@@ -62,17 +62,34 @@ def print_countries(countries:list,sorted = True,sort_by="population"):
 if __name__ == "__main__":
     API_URL = "https://countries.dev/countries"
     country_data = fetch_data_from_api(API_URL)
-    filtered_countries = None
     while True:
-        region = input("Enter the region name to filter countries (e.g Asia, Europe): ")
-        filtered_countries, available_regions = get_countries_by_region(country_data, region)
-        if filtered_countries is not None and len(filtered_countries) > 0:
+        print("\n*************OPTIONS*************\n")
+        print("1. Filter countries by region")
+        print("2. Fetch the most populated countries")
+        print("3. Exit")
+        choice = input("Enter your choice (1-3): ")
+        if choice in ['1', '2', '3']:
             break
-        print(f"No countries found in the region: {region}")
-        print(f"Please enter a valid region name e.g.({', '.join(available_regions)})")
-
-    print_countries(filtered_countries, sorted=True,sort_by='name')
-    #all_sorted_countries = sort_countries_by(filtered_countries)
-    #most_populated_countries =fetch_the_most_populated_countries(all_sorted_countries, 2)
-    #print_countries(most_populated_countries,sorted=True)
+        else:
+            print("\nInvalid choice. Please enter a valid option (1-3).")
+    if choice == '1':
+        filtered_countries = None
+        while True:
+            region = input("Enter the region name to filter countries (e.g Asia, Europe): ")
+            region = region.lower().capitalize() # This handles case sensitivity by capitalizing the first letter of the region name
+            filtered_countries, available_regions = get_countries_by_region(country_data, region)
+            if filtered_countries is not None and len(filtered_countries) > 0:
+                break
+            print(f"No countries found in the region: {region}")
+            print(f"Please enter a valid region name e.g.({', '.join(available_regions)})")
+        
+        print_countries(filtered_countries, sorted=True,sort_by='name', reverse=False)
+    if choice == '2':
+        all_sorted_countries = sort_countries_by(country_data)
+        n = int(input("Enter the number of most populated countries to fetch: "))
+        most_populated_countries = fetch_the_most_populated_countries(all_sorted_countries, n)
+        print_countries(most_populated_countries, sorted=True)
+    if choice == '3':
+        print("Exiting the program.")
+        exit()
     
