@@ -1,7 +1,7 @@
 # Prework-Assignment-For-Code-The-Dream
-This is just an assignment solution
-Author : Yakupcan Ergen
-Date: 11/22/2026
+### This is just an assignment solution
+### Author : Yakupcan Ergen
+### Date: 11/22/2026
 ## What tools we use 
 - Requests library for api calling and fetching
 - Python version 3.13
