@@ -29,8 +29,12 @@ def sort_countries_by(countries,by="population",reversed =True):
     if by not in countries[0]:
         print(f"Invalid filter '{by}' provided. Please use a valid filter.")
         return []
-    sorted_countries = sorted(countries, key=lambda x: x[by], reverse=reversed)
-    return sorted_countries
+    try:
+        sorted_countries = sorted(countries, key=lambda x: x[by], reverse=reversed)
+        return sorted_countries
+    except Exception as e:
+        print(f"Error occurred while sorting countries, Please ensure that the filter '{by}' is valid and the data is in the correct format.")
+        return []   
 # Fetch the most populated countries from the sorted list
 def fetch_the_most_populated_countries(sorted_countries=None, n:int=2):
     if sorted_countries is None:
@@ -82,8 +86,21 @@ if __name__ == "__main__":
                 break
             print(f"No countries found in the region: {region}")
             print(f"Please enter a valid region name e.g.({', '.join(available_regions)})")
-        
-        print_countries(filtered_countries, sorted=True,sort_by='name', reverse=False)
+        s = input("Do you want to sort the countries? (yes/no): ").strip().lower()
+        if s == 'yes':
+            sort_by = input("Enter the filter to sort by (population, area, name): ").strip().lower()
+            if sort_by not in ['population', 'area', 'name']:
+                print(f"Invalid filter '{sort_by}' provided. Defaulting to 'population'.")
+                sort_by = 'population'
+
+            order = input("Enter the order of sorting (asc/desc): ").strip().lower()
+            if order not in ['asc', 'desc']:
+                print(f"Invalid order '{order}' provided. Defaulting to 'desc'.")
+                order = 'desc'
+            reverse = True if order == 'desc' else False
+            print_countries(filtered_countries,sort_by=sort_by, sorted=True, reverse=reverse)
+        else:
+            print_countries(filtered_countries, sorted=False)
     if choice == '2':
         all_sorted_countries = sort_countries_by(country_data)
         n = int(input("Enter the number of most populated countries to fetch: "))
